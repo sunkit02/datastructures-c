@@ -3,13 +3,15 @@
 #include <string.h>
 #include "arraylist.h"
 
+#include "tests/integer.h"
 
-bool arrayListResize(ArrayList *list, size_t newSize) {
-    void *temp = realloc(list->elements, newSize);
+
+bool arrayListResize(ArrayList *self, size_t newSize) {
+    void *temp = realloc(self->elements, newSize);
     if (temp == NULL) {
         return false;
     }
-    list->elements = temp;
+    self->elements = temp;
     return true;
 }
 
@@ -32,8 +34,16 @@ bool arrayListAdd(ArrayList *self, void *element) {
 
 
 bool arrayListInsert(ArrayList *self, void* element, size_t index) {
-    if (self->size >= self->capacity) {
+    // validate index
+    if (index > self->size) {
+        printf("Insert(). Index out of bounds. Max=%zu, Given=%zu\n", self->size, index);
+        exit(EXIT_FAILURE);
+    }
+
+    // resize array if needed
+    if (self->size >= self->capacity - 1) {
         bool resizeSuccess = arrayListResize(self, self->capacity * self->elementSize * 2);
+        printf("resized array. new size: %zu\n", self->size);
         if (!resizeSuccess) {
             puts("Failed to resize array");
             exit(EXIT_FAILURE);
@@ -41,30 +51,67 @@ bool arrayListInsert(ArrayList *self, void* element, size_t index) {
     }
 
     // copy elements in the way to temp address
-    void *startCpy = self->elements + (self->size * self->elementSize) + 1;
+    void *startCpy = self->elements + (index * self->elementSize);
     void *temp = malloc(self->elementSize * (self->size - index));
     memcpy(temp, startCpy, self->elementSize * (self->size - index));
 
     // insert the element
     void *startPtr = self->elements + (index * self->elementSize);
     memcpy(startPtr, element, self->elementSize);
-    
+
     // copy rest of elements one index down
     memcpy(startPtr + (self->elementSize), temp, self->elementSize * (self->size - index));
 
     // free temp address
     free(temp);
 
+    // increment list size
+    self->size++;
     return true;
 }
 
 
-void* arrayListGet(ArrayList *list, size_t index) {
-    if (index >= list->size) {
-        printf("Index out of bounds. Max: %zu, Given: %zu\n", list->size, index);
+void arrayListRemove(ArrayList *self, size_t index) {
+    // validate index
+    if (index >= self->size) {
+        printf("Remove(). Index out of bounds. Max=%zu, Given=%zu\n", self->size - 1, index);
         exit(EXIT_FAILURE);
     }
-    return list->elements + (list->elementSize * index);
+
+    // copy elements behind element to be removed
+    void *temp = malloc(self->elementSize * (self->size - index - 1));
+    memcpy(temp, self->elements + ((index + 1) * self->elementSize), self->elementSize * (self->size - index - 1));
+
+    // move elements behind one index forward
+    memcpy(self->elements + (index * self->elementSize), temp, self->elementSize * (self->size - index - 1));
+
+    // decrement list size
+    self->size--;
+}
+
+
+void* arrayListGet(ArrayList *self, size_t index) {
+    if (index >= self->size) {
+        printf("Get(). Index out of bounds. Max: %zu, Given: %zu\n", self->size - 1, index);
+        exit(EXIT_FAILURE);
+    }
+
+    return self->elements + (self->elementSize * index);
+}
+
+bool arrayListIsEmpty(ArrayList *self) {
+    return self->size == 0;
+}
+
+char *arrayListToString(ArrayList *self, char *(elementToString)(void *element)) { 
+    printf("%s", "[");
+    for (size_t i = 0; i < self->size; i++) {
+        printf("%s", elementToString(self->get(self, i)));
+        if (i < self->size - 1) printf("%s", ", ");
+    }
+    puts("]");
+
+    return NULL;
 }
 
 
@@ -77,6 +124,9 @@ ArrayList *newArrayList(size_t initialCapacity, size_t elementSize) {
     list->add = arrayListAdd;
     list->get = arrayListGet;
     list->insert = arrayListInsert;
+    list->remove = arrayListRemove;
+    list->isEmpty = arrayListIsEmpty;
+    list->toString = arrayListToString;
 
     return list;
 }
