@@ -21,16 +21,4 @@ void arraylistTest() {
     }
     puts("2");
     list->toString(list, integerToString);
-    /*
-    list->toString(list, integerToString);
-    Integer *ninety_nine = malloc(sizeof(Integer));
-    ninety_nine->value = 99;
-    list->insert(list, ninety_nine, 9);
-    list->toString(list, integerToString);
-    //list->insert(list, ninety_nine, 15);
-    list->insert(list, ninety_nine, 1);
-    list->toString(list, integerToString);
-    list->insert(list,ninety_nine, list->size);
-    list->toString(list, integerToString);
-    printf("size: %zu\n", list->size);
-    */ }
+}

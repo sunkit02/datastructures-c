@@ -90,7 +90,7 @@ void arrayListRemove(ArrayList *self, size_t index) {
 }
 
 
-void* arrayListGet(ArrayList *self, size_t index) {
+void *arrayListGet(ArrayList *self, size_t index) {
     if (index >= self->size) {
         printf("Get(). Index out of bounds. Max: %zu, Given: %zu\n", self->size - 1, index);
         exit(EXIT_FAILURE);

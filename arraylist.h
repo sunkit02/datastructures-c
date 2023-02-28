@@ -11,8 +11,8 @@ typedef struct arraylist {
     size_t capacity;
     char *type;
     bool (*add)(struct arraylist *self, void *element);
-    bool (*insert)(struct arraylist *self, void *element, size_t index);
     void *(*get)(struct arraylist *self, size_t index);
+    bool (*insert)(struct arraylist *self, void *element, size_t index);
     void (*remove)(struct arraylist *self, size_t index);
     bool (*isEmpty)(struct arraylist *self);
     void (*clear)(struct arraylist *self);
