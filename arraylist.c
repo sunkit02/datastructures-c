@@ -17,14 +17,21 @@ bool arrayListResize(ArrayList *self, size_t newSize) {
 
 
 bool arrayListAdd(ArrayList *self, void *element) {
+
+    // double capacity when not enough space
     if (self->size >= self->capacity) {
-        bool resizeSuccess = arrayListResize(self, self->capacity * self->elementSize * 2);
+        size_t newCapacity = self->capacity * 2;
+        printf("Target new capacity: %zu\n", newCapacity);
+        bool resizeSuccess = arrayListResize(self, newCapacity * self->elementSize);
+        self->capacity = newCapacity;
+        printf("resized array. new capacity: %zu\n", self->capacity);
         if (!resizeSuccess) {
             puts("Failed to resize array");
             exit(EXIT_FAILURE);
         }
     }
 
+    // append new element to end of elements
     size_t size = self->size;
     void *start = self->elements + (size * self->elementSize);
     memcpy(start, element, self->elementSize);
@@ -42,8 +49,11 @@ bool arrayListInsert(ArrayList *self, void* element, size_t index) {
 
     // resize array if needed
     if (self->size >= self->capacity - 1) {
-        bool resizeSuccess = arrayListResize(self, self->capacity * self->elementSize * 2);
-        printf("resized array. new size: %zu\n", self->size);
+        size_t newCapacity = self->capacity * 2;
+        printf("Target new capacity: %zu\n", newCapacity);
+        bool resizeSuccess = arrayListResize(self, newCapacity * self->elementSize);
+        self->capacity = newCapacity;
+        printf("resized array. new capacity: %zu\n", self->capacity);
         if (!resizeSuccess) {
             puts("Failed to resize array");
             exit(EXIT_FAILURE);

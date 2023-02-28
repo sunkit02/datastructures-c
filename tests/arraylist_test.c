@@ -3,13 +3,13 @@
 #include "integer.h"
 #include "../arraylist.h"
 
+
 void arraylistTest() {
     ArrayList *list = newArrayList(10, sizeof(Integer *));
     for (int i = 0; i < 20; i++) {
         Integer *num = malloc(sizeof(Integer));
         num->value = i;
-        //list->add(list, num);
-        list->insert(list, num, list->size);
+        list->add(list, num);
     }
     list->toString(list, integerToString);
     list->remove(list, list->size - 1);

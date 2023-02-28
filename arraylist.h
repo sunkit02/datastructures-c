@@ -8,7 +8,7 @@ typedef struct arraylist {
     void *elements;
     size_t size;
     size_t elementSize;
-    size_t capacity;
+    size_t capacity; // The max number of elements to be held (Not the number of bytes)
     char *type;
     bool (*add)(struct arraylist *self, void *element);
     void *(*get)(struct arraylist *self, size_t index);
